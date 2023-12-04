@@ -16,7 +16,6 @@ Copyright (C) 2023 Nicole Mazzuca
 *)
 
 open Util
-open Matrix.Operators
 
 type data =
   | Number of int
@@ -41,8 +40,12 @@ let last_x (c : cell) : int =
 
 let adjacent_cells (c: cell) (cells : cell list) : cell list =
   cells |> List.filter (fun c' ->
-    (c.x - 1 <= c'.x && c'.x <= (last_x c) + 1) &&
-      (c.y - 1 <= c'.y && c'.y <= c.y + 1)
+    let within_x =
+      (c.x - 1 <= c'.x && c'.x <= (last_x c) + 1)
+      || (c'.x - 1 <= c.x && c.x <= (last_x c') + 1)
+    in
+    let within_y = (c.y - 1 <= c'.y && c'.y <= c.y + 1) in
+    within_x && within_y
   )
 
 let print_cell_ln (c : cell) : unit =
@@ -84,6 +87,20 @@ let part_1 ~(data: string list) : int =
     | _ -> acc
   ) 0
 
-let part_2 ~(data: string list) : int = failwith "unimplemented"
+let part_2 ~(data: string list) : int =
+  let cells = parse ~data in
+  cells |> List.fold_left (fun acc el ->
+    match el.data with
+    | Symbol '*' -> begin
+        let adjacent_nums =
+          adjacent_cells el cells
+          |> List.filter (function | {data = Number _; _} -> true | _ -> false)
+        in
+        match adjacent_nums with
+        | [{data = Number fst; _}; {data = Number snd; _}] -> acc + (fst * snd)
+        | _ -> acc
+      end
+    | _ -> acc
+  ) 0
 
 let () = main ~part_1 ~part_2
