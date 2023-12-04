@@ -15,12 +15,24 @@ Copyright (C) 2023 Nicole Mazzuca
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *)
 
-let substr ~(first:int) ?(last:int option) (s: string) =
+let int_of_digit (c : char) : int option =
+  if '0' <= c && c <= '9' then
+    Some ((Char.code c) - (Char.code '0'))
+  else None
+
+let substr ~(first:int) ?(last:int option) (s: string) : string=
   let last = match last with
   | Some l -> if l < 0 then String.length s - l - 1 else l
   | None -> String.length s
   in
   String.sub s first (last - first)
+
+let concat_mapi (f : int -> 'a -> 'b list) (lst : 'a list) : 'b list =
+  let rec recurse idx acc = function
+    | [] -> acc
+    | a :: rest -> recurse (idx + 1) (acc @ (f idx a)) rest
+  in
+  recurse 0 [] lst
 
 let main
   ~(part_1 : data:(string list) -> int)

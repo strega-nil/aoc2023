@@ -16,11 +16,14 @@ run-day%.2: day% src/day%.txt
 day%: out/day%.cmx $(LIBS)
 	$(OCAMLCC) $(LIBS) $< -o $@
 
-out/%.cmx : src/%.ml out/util.cmx | out
+out/%.cmx : src/%.ml $(LIBS) | out
 	$(OCAMLCC) -c $< -o out/$*.cmx -I out
 
-out/%.cmx : lib/%.ml | out
-	$(OCAMLCC) -c $< -o out/$*.cmx
+out/%.cmi : lib/%.mli | out
+	$(OCAMLCC) -c $< -o out/$*.cmi -I out
+
+out/%.cmx : lib/%.ml out/%.cmi | out
+	$(OCAMLCC) -c $< -o out/$*.cmx -I out
 
 out:
 	mkdir -p out
