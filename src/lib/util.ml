@@ -34,7 +34,7 @@ let concat_mapi (f : int -> 'a -> 'b list) (lst : 'a list) : 'b list =
   in
   recurse 0 [] lst
 
-let fold_map ~(init : 'c) ~(op : 'c -> 'b -> 'c) (f : 'a -> 'b) (lst : 'a list) : 'c =
+let fold_map ~(init : 'acc) ~(op : 'acc -> 'b -> 'acc) (f : 'a -> 'b) (lst : 'a list) : 'acc =
   lst |> List.fold_left (fun acc el -> op acc (f el)) init
 
 let sum_map f lst = fold_map ~init:0 ~op:(+) f lst
@@ -50,7 +50,7 @@ let main
       | s -> recurse (s :: acc)
       | exception End_of_file -> acc
     in
-    let result = recurse [] in
+    let result = List.rev (recurse []) in
     close_in f ;
     result
   in
