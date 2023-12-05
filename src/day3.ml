@@ -76,20 +76,20 @@ let parse ~(data: string list) : cell list =
 
 let part_1 ~(data: string list) : int =
   let cells = parse ~data in
-  cells |> List.fold_left (fun acc el ->
+  cells |> sum_map (fun el ->
     match el.data with
     | Number i -> let has_adjacent_symbol =
         (adjacent_cells el cells)
         |> List.exists (function | {data = Symbol _; _} -> true | _ -> false)
       in 
-      if has_adjacent_symbol then acc + i
-      else acc
-    | _ -> acc
-  ) 0
+      if has_adjacent_symbol then i
+      else 0
+    | _ -> 0
+  )
 
 let part_2 ~(data: string list) : int =
   let cells = parse ~data in
-  cells |> List.fold_left (fun acc el ->
+  cells |> sum_map (fun el ->
     match el.data with
     | Symbol '*' -> begin
         let adjacent_nums =
@@ -97,10 +97,10 @@ let part_2 ~(data: string list) : int =
           |> List.filter (function | {data = Number _; _} -> true | _ -> false)
         in
         match adjacent_nums with
-        | [{data = Number fst; _}; {data = Number snd; _}] -> acc + (fst * snd)
-        | _ -> acc
+        | [{data = Number fst; _}; {data = Number snd; _}] -> fst * snd
+        | _ -> 0
       end
-    | _ -> acc
-  ) 0
+    | _ -> 0
+  )
 
 let () = main ~part_1 ~part_2

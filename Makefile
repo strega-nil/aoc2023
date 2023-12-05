@@ -3,7 +3,7 @@ OCAMLCC ?= ocamlopt
 DAYS := $(patsubst src/%.ml,%,$(wildcard src/*.ml))
 LIBS := $(patsubst lib/%.ml,out/%.cmx,$(wildcard lib/*.ml))
 
-.PHONY: clean run-%.1 run-%.2
+.PHONY: clean run-%.1 run-%.2 new-day%
 .SECONDARY:
 
 all: $(DAYS)
@@ -12,6 +12,9 @@ run-day%.1: day% src/day%.txt
 	./$< 1 src/day$*.txt
 run-day%.2: day% src/day%.txt
 	./$< 2 src/day$*.txt
+
+new-day%: template.ml
+	cp template.ml src/day$*.ml
 
 day%: out/day%.cmx $(LIBS)
 	$(OCAMLCC) $(LIBS) $< -o $@

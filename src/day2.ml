@@ -92,13 +92,12 @@ let part_2 ~(data : string list) : int =
     ; blue = lhs.blue ^^ rhs.blue}
   in
   data
-  |> List.map (fun line ->
+  |> sum_map (fun line ->
     let {counts; _} = parse_game line in
     let blocks = counts
       |> List.fold_left combine {red = 0; green = 0; blue = 0}
     in
     blocks.red * blocks.green * blocks.blue
   )
-  |> List.fold_left (+) 0
 
 let () = Util.main ~part_1 ~part_2

@@ -15,6 +15,8 @@ Copyright (C) 2023 Nicole Mazzuca
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *)
 
+open Util
+
 let part_1 ~(data : string list) : int =
   let parse_line (s : string) : int =
     let is_digit (c : char) : bool = '0' <= c && c <= '9' in
@@ -35,7 +37,7 @@ let part_1 ~(data : string list) : int =
     a * 10 + b
   in
   data
-  |> List.fold_left (fun acc line -> acc + parse_line line) 0
+  |> sum_map parse_line
 
 let part_2 ~(data : string list) : int =
   let parse_line (s : string) : int =
@@ -64,6 +66,6 @@ let part_2 ~(data : string list) : int =
     a * 10 + b
   in
   data
-  |> List.fold_left (fun acc line -> acc + parse_line line) 0
+  |> sum_map parse_line
 
-let () = Util.main ~part_1 ~part_2
+let () = main ~part_1 ~part_2

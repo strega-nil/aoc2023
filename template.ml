@@ -15,9 +15,9 @@ Copyright (C) 2023 Nicole Mazzuca
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *)
 
-val int_of_digit : char -> int option
-val substr : first:int -> ?last:int -> string -> string
-val concat_mapi : (int -> 'a -> 'b list) -> 'a list -> 'b list
-val fold_map : init:'b -> op:('b -> 'b -> 'b) -> ('a -> 'b) -> 'a list -> 'b
-val sum_map : ('a -> int) -> 'a list -> int
-val main : part_1:(data:(string list) -> int) -> part_2:(data:(string list) -> int) ->  unit
+open Util
+
+let part_1 ~(data: string list) : int = failwith "unimplemented"
+let part_2 ~(data: string list) : int = failwith "unimplemented"
+
+let () = main ~part_1 ~part_2

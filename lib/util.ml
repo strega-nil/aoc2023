@@ -34,6 +34,11 @@ let concat_mapi (f : int -> 'a -> 'b list) (lst : 'a list) : 'b list =
   in
   recurse 0 [] lst
 
+let fold_map ~(init : 'c) ~(op : 'c -> 'b -> 'c) (f : 'a -> 'b) (lst : 'a list) : 'c =
+  lst |> List.fold_left (fun acc el -> op acc (f el)) init
+
+let sum_map f lst = fold_map ~init:0 ~op:(+) f lst
+
 let main
   ~(part_1 : data:(string list) -> int)
   ~(part_2 : data:(string list) -> int)
