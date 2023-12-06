@@ -19,5 +19,7 @@ val int_of_digit : char -> int option
 val substr : first:int -> ?last:int -> string -> string
 val concat_mapi : (int -> 'a -> 'b list) -> 'a list -> 'b list
 val fold_map : init:'acc -> op:('acc -> 'b -> 'acc) -> ('a -> 'b) -> 'a list -> 'acc
+val find_min : lt:('a -> 'a -> bool) -> 'a list -> 'a
+val find_max : lt:('a -> 'a -> bool) -> 'a list -> 'a
 val sum_map : ('a -> int) -> 'a list -> int
 val main : part_1:(data:(string list) -> int) -> part_2:(data:(string list) -> int) ->  unit

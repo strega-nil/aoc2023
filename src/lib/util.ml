@@ -39,6 +39,20 @@ let fold_map ~(init : 'acc) ~(op : 'acc -> 'b -> 'acc) (f : 'a -> 'b) (lst : 'a 
 
 let sum_map f lst = fold_map ~init:0 ~op:(+) f lst
 
+let find_min ~(lt : 'a -> 'a -> bool) (lst : 'a list) : 'a =
+  let rec recurse acc = function
+    | [] -> acc
+    | x :: xs -> recurse (if lt x acc then x else acc) xs
+  in
+  match lst with
+  | [] -> failwith "find_min empty list"
+  | x :: xs -> recurse x xs
+
+let find_max ~(lt : 'a -> 'a -> bool) (lst : 'a list) : 'a =
+  match lst with
+  | [] -> failwith "find_max empty list"
+  | lst -> find_min ~lt:(fun a b -> lt b a) lst
+
 let main
   ~(part_1 : data:(string list) -> int)
   ~(part_2 : data:(string list) -> int)

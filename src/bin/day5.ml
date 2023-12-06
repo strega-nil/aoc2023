@@ -25,6 +25,9 @@ type map =
 type set =
   { set : map list }
 
+let in_map (el : int) (m : map) : bool =
+  m.source_start <= el && el < m.source_start + m.length
+
 let parse ~(data : string list) : int list * set list =
   match data with
   | [] -> invalid_arg "empty data"
@@ -61,11 +64,7 @@ let part_1 ~(data: string list) : int =
   let find_final seed =
     sets
     |> List.fold_left (fun cur {set} ->
-      match
-        set
-        |> List.find_opt (fun map ->
-          map.source_start <= cur && cur < map.source_start + map.length)
-      with
+      match set |> List.find_opt (in_map cur) with
       | Some map -> map.dest_start + (cur - map.source_start)
       | None -> cur
     ) seed
@@ -74,9 +73,58 @@ let part_1 ~(data: string list) : int =
   seeds
   |> fold_map ~init:max_int ~op:min find_final
 
+type range =
+  { start : int
+  ; length : int }
+
+let next_map_after (el : int) ({set} : set) : map option =
+  set |> List.fold_left
+    (fun acc m ->
+      if m.source_start <= el then acc
+      else match acc with
+      | None -> Some m
+      | Some m' -> if m.source_start < m'.source_start then Some m else acc)
+    None
+
+let map_range (map_set : set) (r : range) : range list =
+  let last = r.start + r.length in
+  let rec recurse acc first =
+    match List.find_opt (in_map first) map_set.set with
+    | Some m ->
+        let map_last = m.source_start + m.length in
+        let start = m.dest_start + (first - m.source_start) in
+        if map_last >= last then
+          {start; length = last - first} :: acc
+        else
+          recurse ({start; length = map_last - first} :: acc) map_last
+    | None ->
+        match next_map_after first map_set with
+        | None ->
+            {start = first; length = last - first} :: acc
+        | Some m ->
+            recurse ({start = first; length = m.source_start - first} :: acc) m.source_start
+  in
+  recurse [] r.start
+
 let part_2 ~(data: string list) : int =
   let seed_ranges, sets = parse ~data in
-  (* I need to be more clever here than just building up the list of seeds *)
-  failwith "unimplemented"
+  let seed_ranges =
+    let rec pairify acc = function
+      | [] -> acc
+      | start :: length :: rest -> pairify ({start; length} :: acc) rest
+      | _ -> failwith "unexpected input"
+    in
+    List.rev (pairify [] seed_ranges)
+  in
+  let soil_ranges =
+    sets
+    |> List.fold_left
+      (fun ranges set -> ranges |> List.concat_map (map_range set))
+      seed_ranges
+  in
+  let final_min_range =
+    soil_ranges |> find_min ~lt:(fun a b -> a.start < b.start)
+  in
+  final_min_range.start
 
 let () = main ~part_1 ~part_2
