@@ -37,7 +37,22 @@ let concat_mapi (f : int -> 'a -> 'b list) (lst : 'a list) : 'b list =
 let fold_map ~(init : 'acc) ~(op : 'acc -> 'b -> 'acc) (f : 'a -> 'b) (lst : 'a list) : 'acc =
   lst |> List.fold_left (fun acc el -> op acc (f el)) init
 
+let fold_mapi ~(init : 'acc) ~(op : 'acc -> 'b -> 'acc) (f : int -> 'a -> 'b) (lst : 'a list) : 'acc =
+  lst
+  |> List.fold_left (fun (acc, idx) el -> (op acc (f idx el), idx + 1)) (init, 0)
+  |> (fun (acc, _) -> acc)
+
 let sum_map f lst = fold_map ~init:0 ~op:(+) f lst
+
+let count : ('a -> bool) -> 'a list -> int = fun pred lst ->
+  let rec recurse acc = function
+    | [] -> acc
+    | x :: xs -> recurse (acc + if pred x then 1 else 0) xs
+  in
+  recurse 0 lst
+
+let count_of : 'a -> 'a list -> int = fun target lst ->
+  count (fun el -> el = target) lst
 
 let find_min ~(lt : 'a -> 'a -> bool) (lst : 'a list) : 'a =
   let rec recurse acc = function
